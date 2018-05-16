@@ -3,6 +3,8 @@ var fs = require('fs');
 var {token} = require('./secrets');
 console.log('Welcome to the GitHub Avatar Downloader!');
 
+const args = process.argv.slice(2);
+
 function getRepoContributors(repoOwner, repoName, cb) {
     var options = {
       url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
@@ -18,18 +20,6 @@ function getRepoContributors(repoOwner, repoName, cb) {
   });
 
 }
-  
-
-getRepoContributors("jquery", "jquery", function(err, contributors) {
-  console.log("Errors:", err);
-  // console.log(JSON.stringify(result, null, 2));
-  for (const contributor of contributors) {
-    // console.log(contributor.login);
-    // console.log(contributor.avatar_url);
-    downloadImageByURL(contributor.avatar_url, `./avatar/${contributor.login}.jpg`);
-  }
-});
-
 
 function downloadImageByURL(url, filePath) {
   console.log('Starting downloadImageByURL with', url, filePath);
@@ -43,9 +33,12 @@ function downloadImageByURL(url, filePath) {
          .pipe(fs.createWriteStream(filePath));  
 }
 
-// const testurl = "https://avatars2.githubusercontent.com/u/89246?v=4"
-// const testPath = "./avatar/test.jpg"
-
-// console.log('Starting application!');
-// downloadImageByURL(testurl, testPath);
-
+getRepoContributors(args[0], args[1], function(err, contributors) {
+  console.log("Errors:", err);
+  // console.log(JSON.stringify(result, null, 2));
+  for (const contributor of contributors) {
+    // console.log(contributor.login);
+    // console.log(contributor.avatar_url);
+    downloadImageByURL(contributor.avatar_url, `./avatar/${contributor.login}.jpg`);
+  }
+});
